@@ -112,8 +112,21 @@ class LanguageModel:
 
 
 if __name__ == '__main__':
-    lm = LanguageModel('12 1 13 12 15 234 2526', ' ,.:0123456789', '0123456789')
-    prefix = '1'
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--corpus", type=str, default=None, help="Path to corpus text file")
+    parser.add_argument("--chars", type=str, default=None, help="Path to character set text file")
+    parser.add_argument("--word-chars", type=str, default=None, help="Path to word character set text file")
+    parser.add_argument("--prefix", type=str, default=None, help="Word for test")
+    parser.add_argument("--name", type=str, default=None, help="Name of LM pickle")
+    args = parser.parse_args()
+    corpus = open(args.corpus, "r", encoding='utf-8').read() if args.corpus else '12 1 13 12 15 234 2526'
+    chars = open(args.chars, "r", encoding='utf-8').read() if args.chars else ' ,.:0123456789'
+    word_chars = open(args.word_chars, "r", encoding='utf-8').read() if args.word_chars else '0123456789'
+    lm = LanguageModel(corpus, chars, word_chars)
+    if args.name:
+        sys.setrecursionlimit(10000)
+        pickle.dump(lm, open(args.name, "wb"))
+    prefix = args.prefix if args.prefix else '1'
     print('getNextChars:', lm.getNextChars(prefix))
     print('getNonWordChars:', lm.getNonWordChars())
     print('getNextWords:', lm.getNextWords(prefix))
